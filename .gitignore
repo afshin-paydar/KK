@@ -216,3 +216,22 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Knock Knock ---
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Secrets & local env
+.env
+*.local
+
+# PKI material — keys and issued certs must never be committed
+infra/pki/*.key
+infra/pki/*.pem
+infra/pki/*.csr
+infra/pki/*.srl
+
+# Device agent runtime state (keys, certs, cached policy)
+/var/lib/kk/

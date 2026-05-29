@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: kk
+      POSTGRES_PASSWORD: kk
+      POSTGRES_DB: kk
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  # MQTT broker with mutual TLS. Devices authenticate with per-device client
+  # certs issued by the KK PKI; ACLs restrict each device to its own topics.
+  broker:
+    build: ./mqtt          # config + ACL baked in with correct ownership/perms
+    ports: ["8883:8883"]
+    volumes:
+      # Certs are generated at runtime by pki/bootstrap.sh — mount, don't bake.
+      - ./pki:/mosquitto/certs:ro
+    depends_on: [postgres]
+
+volumes:
+  pgdata:

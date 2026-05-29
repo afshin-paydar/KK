@@ -1,0 +1,10 @@
+# MQTT ACL. The client-cert CN (device_id) becomes the username.
+# %u expands to that username, so each device is confined to its own subtree.
+
+# Devices: read/write only under their own device id.
+pattern readwrite devices/%u/#
+
+# The backend bridge connects with a cert whose CN = "backend" and needs the
+# whole fleet. Grant it explicitly.
+user backend
+topic readwrite devices/#

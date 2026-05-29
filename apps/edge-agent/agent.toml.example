@@ -1,0 +1,6 @@
+# /etc/kk/agent.toml
+backend_url = "https://kk.example.com"   # enrollment endpoint base
+enrollment_token = "paste-one-time-token-here"
+state_dir = "/var/lib/kk"
+camera_index = 0
+heartbeat_interval_s = 30

@@ -1,0 +1,8 @@
+{
+  "name": "knock-knock",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Knock Knock — edge AI agent management platform",
+  "workspaces": ["apps/dashboard", "packages/contracts"],
+  "packageManager": "pnpm@9.0.0"
+}
