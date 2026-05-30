@@ -1,0 +1,20 @@
+# Production-ish single-ECS deployment: backend + MQTT broker.
+# Postgres is NOT here — use managed ApsaraDB RDS for PostgreSQL and point
+# DATABASE_URL at it. Put HTTPS termination (ALB / Nginx) in front of :8000.
+# Expose :8883 via NLB TCP passthrough (do NOT terminate mTLS at the LB).
+services:
+  backend:
+    build: ../apps/backend
+    restart: always
+    env_file: ./backend.env.prod        # DEV_AUTH off, real IDaaS + Qwen + RDS
+    ports: ["8000:8000"]
+    volumes:
+      - ./pki:/app/pki:ro               # CA used to sign device certs + bridge mTLS
+    # In prod, mount the CA *key* from a secret, not the repo (see DEPLOY doc).
+
+  broker:
+    build: ./mqtt
+    restart: always
+    ports: ["8883:8883"]
+    volumes:
+      - ./pki:/mosquitto/certs:ro

@@ -39,6 +39,10 @@ def _resolve_locally(payload: dict, policy: dict) -> dict | None:
 def _tls_context(cfg: AgentConfig) -> ssl.SSLContext:
     ctx = ssl.create_default_context(cafile=str(cfg.ca_path))
     ctx.load_cert_chain(str(cfg.cert_path), str(cfg.key_path))
+    if cfg.tls_insecure:
+        # DEV ONLY: broker cert CN is "broker", not the LAN IP we dialed.
+        # Still verifies the cert chain against our CA — only the hostname check is off.
+        ctx.check_hostname = False
     return ctx
 
 
@@ -48,10 +52,11 @@ async def run(cfg: AgentConfig, device_id: uuid.UUID) -> None:
     prefix = f"devices/{device_id}"
 
     async with Client(
-        hostname=cfg.backend_url.split("://")[-1].split(":")[0],  # broker host; see agent.toml
-        port=8883,
+        hostname=cfg.broker_host,
+        port=cfg.broker_port,
         tls_context=_tls_context(cfg),
     ) as client:
+        print(f"[agent] connected to broker {cfg.broker_host}:{cfg.broker_port} as {device_id}")
         await client.subscribe(f"{prefix}/actions", qos=1)
         await client.subscribe(f"{prefix}/config", qos=1)
 
@@ -94,7 +99,18 @@ async def run(cfg: AgentConfig, device_id: uuid.UUID) -> None:
 
 
 def main() -> None:
-    cfg = load_config()
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(prog="kk-agent")
+    parser.add_argument(
+        "--config",
+        default=os.environ.get("KK_AGENT_CONFIG", "/etc/kk/agent.toml"),
+        help="path to agent.toml (or set KK_AGENT_CONFIG)",
+    )
+    args = parser.parse_args()
+
+    cfg = load_config(args.config)
     device_id = enroll(cfg) if not cfg.cert_path.exists() else _device_id_from_cert(cfg)
     asyncio.run(run(cfg, device_id))
 
