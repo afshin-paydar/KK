@@ -19,16 +19,16 @@ class Settings(BaseSettings):
     qwen_api_key: str = ""
     qwen_default_model: str = "qwen-plus"
 
-    # MQTT
+    # MQTT  (paths are relative to apps/backend; certs come from infra/pki)
     mqtt_host: str = "localhost"
     mqtt_port: int = 8883
-    mqtt_ca_cert: str = "./pki/ca-chain.pem"
-    mqtt_client_cert: str = "./pki/backend-client.pem"
-    mqtt_client_key: str = "./pki/backend-client.key"
+    mqtt_ca_cert: str = "../../infra/pki/ca-chain.pem"
+    mqtt_client_cert: str = "../../infra/pki/backend.pem"
+    mqtt_client_key: str = "../../infra/pki/backend.key"
 
-    # PKI
-    pki_ca_cert: str = "./pki/intermediate-ca.pem"
-    pki_ca_key: str = "./pki/intermediate-ca.key"
+    # PKI — the intermediate CA the backend uses to sign per-device certs
+    pki_ca_cert: str = "../../infra/pki/intermediate-ca.pem"
+    pki_ca_key: str = "../../infra/pki/intermediate-ca.key"
     pki_device_cert_ttl_days: int = 30
 
     # App

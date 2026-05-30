@@ -1,6 +1,19 @@
-# /etc/kk/agent.toml
-backend_url = "https://kk.example.com"   # enrollment endpoint base
-enrollment_token = "paste-one-time-token-here"
+# /etc/kk/agent.toml   (or pass --config / set KK_AGENT_CONFIG)
+
+# Where the backend's enrollment endpoint lives. On a Pi talking to a laptop,
+# use the laptop's LAN IP, NOT localhost.
+backend_url = "http://192.168.1.20:8000"
+
+# MQTT broker host. Defaults to the backend_url host if omitted.
+broker_host = "192.168.1.20"
+broker_port = 8883
+
+# DEV ONLY: the dev broker cert's CN is "broker", not the LAN IP, so skip the
+# hostname check (the cert is still verified against the CA). Set false in prod
+# and issue a broker cert whose SAN matches the real hostname.
+tls_insecure = true
+
+enrollment_token = "paste-one-time-token-from-dashboard"
 state_dir = "/var/lib/kk"
 camera_index = 0
 heartbeat_interval_s = 30
