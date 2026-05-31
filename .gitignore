@@ -222,6 +222,8 @@ __marimo__/
 node_modules/
 dist/
 .vite/
+.next/
+next-env.d.ts
 
 # Secrets & local env
 .env
