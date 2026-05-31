@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import devices, enrollment, policies
+from app.api.routes import devices, enrollment, policies, health
 from app.config import get_settings
 from app.database import Base, engine
 from app.services.mqtt_bridge import run_bridge
@@ -44,16 +44,13 @@ app = FastAPI(title="Knock Knock API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # dashboard dev origin
+    allow_origins=["http://localhost:5173"],  # Frontend dev origin
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(health.router)
 app.include_router(devices.router)
 app.include_router(enrollment.router)
 app.include_router(policies.router)
 
-
-@app.get("/healthz")
-async def healthz():
-    return {"status": "ok"}
